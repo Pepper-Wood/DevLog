@@ -1,3 +1,5 @@
+https://dev.to/pepperwood/automating-rpg-maker-mv-html-builds-to-itch-io-using-github-actions-3n02
+
 # Automating RPG Maker MV HTML Builds to Itch.io with Github Actions
 
 _Disclaimer: This is a living document, as I'm continuing to understand how to better these development processes._
