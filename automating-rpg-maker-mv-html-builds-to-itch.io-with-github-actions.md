@@ -24,13 +24,12 @@ Before explaining what each file in the first two folders is doing, here is the 
 ```
 ├── .github/
 │   ├── workflows/
-│   │   ├── itch_build.yml
-│   │   └── prettify_json.yml
+│   │   └── itch_build.yml
 ├── scripts/
-│   └── format_json.py
+│   ├── format_json.py
+│   └── zip_restrictions.py
 ├── src/
-│   ├── audio/
-│   │   ├── **/*.css
+│   ├── audio/*
 │   ├── data/*
 │   ├── fonts/*
 │   ├── icon/*
@@ -82,30 +81,67 @@ for subdir, dirs, files in os.walk(rootdir):
 
 This one file handles both of these actions, due to the closeness of their implementation. The script is run as either `python3 scripts/format_json.py prettify` or `python3 scripts/format_json.py minify`. It checks all files in the specified root directory (hard-coded to 'src/') and applise the json.dumps() prettifying or minifying before resaving the files.
 
-## prettify_json.yml Github Action workflow
+## zip_restrictions.py
 
-```yml
-name: Prettify JSON files
+```py
+import os
 
-on: push
+rootdir = 'src'
 
-jobs:
-  prettify_json:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v1
-      with:
-        python-version: '3.x'
-    - name: format-json.py
-      run: python3 scripts/format_json.py prettify
+checks_text = [
+    "The ZIP file should not contain more than 500 individual files after extraction.",
+    "The maximum length of a file name including path should not be greater than 240 characters long.",
+    "The size of all the extracted content should not be greater than 1GB.",
+    "The size any single extracted file should not be greater than 100MB."
+]
+checks = [True, True, True, True]
+
+total_file_size = 0
+total_count = 0
+ONE_HUNDRED_MEGABYTES = 104857600
+ONE_GIGABYTE = 1073741824
+
+for subdir, dirs, files in os.walk(rootdir):
+    if subdir == 'src/save':
+        continue
+    for file in files:
+        if file == 'Game.rpgproject':
+            continue
+        if len(file) > 240:
+            print(f"[!] Filename for {file} is {len(file-240)} characters too long!")
+            checks[1] = False
+        total_count = total_count + 1
+        file_size = os.path.getsize(os.path.join(subdir, file))
+        total_file_size += file_size
+        if file_size >= ONE_HUNDRED_MEGABYTES:
+            print(f"[!] {file} is {file_size} bytes!")
+            checks[3] = False
+
+if total_count > 500:
+    checks[0] = False
+    print(f"[!] {total_count} files total!")
+if total_file_size > ONE_GIGABYTE:
+    checks[2] = False
+    print(f"[!] Total file size is {total_file_size} bytes!")
+
+print("-"*20)
+for i in range(len(checks)):
+    if checks[i]:
+        print(f"✅ {checks_text[i]}")
+    else:
+        print(f"❌ {checks_text[i]}")
+
 ```
 
-This Github Action is set to run on every push to the repo, such that all the json files that are stored will be stretched out for easier viewing. This action:
-1. Opens the repos files to read the python scripts
-2. Downloads the latest stable version of Python 3
-3. Runs the prior format_json.py file set to prettify the json files
+Based on the HTML build restrictions documented by itch.io, this helper code will detect whether the resulting files will successfully create a build early (vs. having to see the error on your test page). The script is run as `python3 scripts/zip_restrictions.py`.
+
+## Pre-Commit Git Hooks
+
+// TODO 
+
+**Update:** This section is still a work-in-progress as I figure out how to incorporate these changes into the repo. `python3 scripts/format_json.py prettify` was initially run as a separate Github Actions workflow, but that required pushing and immediately pulling changes on the branch.
+
+Instead, `format_json.py prettify` and `zip_restrictions.py` should both be run as steps in the pre-commit git hook.
 
 ## itch_build.yml Github Action workflow
 
@@ -174,6 +210,10 @@ butler status itch-name/itch-game:HTML
 ```
 
 Now that the first and only manual deployment is complete, you can commit the github workflow ymls. Anytime you push to master, a new HTML build will be fired off to replace the game the workflow is pointing to. 🎉
+
+## Template Repository
+
+I've started work on creating a template RPG Maker MV project both for myself and for others to use: https://github.com/Pepper-Wood/RPG-Maker-MV-Starter-Template
 
 ## In Conclusion
 
