@@ -1,3 +1,5 @@
+https://dev.to/pepperwood/30-days-into-100daysofcode-retrospective-1fo7
+
 # 30 Days into #100DaysOfCode Retrospective
 
 A few months ago, thanks to _current times_, I found myself with a newfound motivation to continue working on my side projects. However, I was running into a cycle of picking up a project and them putting it down after 2 days to chase another shiny new project. The whiplash was too much.
@@ -10,7 +12,7 @@ My goal with this article is to detail what worked, what didn't, and what to imp
 
 The official #100DaysOfCode rules are found at https://www.100daysofcode.com/. I also recommend checking out softwaredotcom's article for more insight:
 
-https://dev.to/softwaredotcom/essential-guide-to-the-100-days-of-code-challenge-3b5g
+{% link softwaredotcom/essential-guide-to-the-100-days-of-code-challenge-3b5g %}
 
 Most participants of this challenge steer toward learning a new skill, learning a new framework, or starting to code. My challenge differed slightly. I needed to commit to finishing one idea while finding a sustainable work/life balance.
 
