@@ -1,4 +1,6 @@
-# Rendering OpenAPI specs as a webpage in Angular
+https://dev.to/pepperwood/rendering-openapi-specs-in-angular-582f
+
+# Rendering OpenAPI Specs in Angular
 
 APIs and API documentation go hand-in-hand. With the help of of the `swagger-ui-dist` npm package, it's super easy to take an OAS YAML or JSON file and display it as a separate page for others to browse. This walkthrough will create an Angular component dedicated to showing the API documentation.
 
@@ -14,7 +16,7 @@ I will be using the files https://raw.githubusercontent.com/OAI/OpenAPI-Specific
 
 In the root of your project, run:
 ```
-npm install swagger-ui-dist
+$ npm install swagger-ui-dist
 ```
 
 This will add the `swagger-ui-dist` CSS and JS files needed to render the API documentation layout.
